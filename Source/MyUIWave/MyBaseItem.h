@@ -19,6 +19,8 @@ protected:
 	virtual void ActivateItem(AActor* Activator) override;
 	virtual FName GetItemType() const override;
 
+	virtual void DestoryItem();
+
 	// Category = 'Item' 이런식으로 실수하지 말것
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;	// GetItemType()을 통해 가져온 아이템 타입을 저장할 변수
