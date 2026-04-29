@@ -15,4 +15,6 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Coin")
 	int32 PointValue;	// 코인 획득에 따른 게임 점수
+
+	virtual void ActivateItem(AActor* Activator) override;
 };
