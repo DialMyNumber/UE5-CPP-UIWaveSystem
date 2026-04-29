@@ -8,10 +8,13 @@ AMyLargeCoinItem::AMyLargeCoinItem()
 	PointValue = 50;
 
 	USphereComponent* Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	InitCollision(Sphere);	// Box Collision 컴포넌트 생성 -> Scene 컴포넌트에 부착, StaticMesh를 Collision에 다시 부착
+	InitCollision(Sphere);
+	// Sphere Collision 컴포넌트 생성 -> Scene 컴포넌트에 부착, StaticMesh를 Collision에 다시 부착
 }
 
 void AMyLargeCoinItem::ActivateItem(AActor* Activator)
 {
-	DestroyItem();
+	Super::ActivateItem(Activator);
+	// 부모 클래스(MyCoinItem)의 ActivateItem 기능 정도만으로도 충분
+	// MyLargeCoinItem 만의 기능을 추가하고 싶으면 아래 코드에 추가
 }
