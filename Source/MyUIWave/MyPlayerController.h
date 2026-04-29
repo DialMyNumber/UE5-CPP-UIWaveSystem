@@ -1,0 +1,32 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
+#include "MyPlayerController.generated.h"
+
+class UInputMappingContext;	// 헤더에선 전방선언
+class UInputAction;	// 헤더에선 전방선언
+
+UCLASS()
+class MYUIWAVE_API AMyPlayerController : public APlayerController
+{
+	GENERATED_BODY()
+
+public:
+	AMyPlayerController();
+
+	// 블루프린트에서 할당 할 수 있도록 UPROPERTY 설정
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputMappingContext* InputMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* JumpAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* LookAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* SprintAction;
+
+protected:
+	virtual void BeginPlay() override;	// BeginPlay에서 활성화 할 예정
+};
