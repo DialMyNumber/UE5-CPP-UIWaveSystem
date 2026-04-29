@@ -23,5 +23,5 @@ public:
 	// 권장하는 것은 TSoftClassPtr 이지만 별도의 코드가 추가로 필요하기 때문에 지금 당장은 TSubclassOf 사용
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Spawnchance;	// 각 아이템의 확률
+	float SpawnChance;	// 각 아이템의 확률
 };
