@@ -9,10 +9,12 @@ AMyDizzyMushroomItem::AMyDizzyMushroomItem()
 	SpeedAmount = -10.0f;	// æ∆¿Ã≈€ »πµÊ Ω√ ¿Ãµø º”µµ ∫Ø»≠∑Æ
 
 	USphereComponent* Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	InitCollision(Sphere);	// Box Collision ƒƒ∆˜≥Õ∆Æ ª˝º∫ -> Scene ƒƒ∆˜≥Õ∆Æø° ∫Œ¬¯, StaticMesh∏¶ Collisionø° ¥ŸΩ√ ∫Œ¬¯
+	InitCollision(Sphere);
+	// Sphere Collision ƒƒ∆˜≥Õ∆Æ ª˝º∫ -> Scene ƒƒ∆˜≥Õ∆Æø° ∫Œ¬¯, StaticMesh∏¶ Collisionø° ¥ŸΩ√ ∫Œ¬¯
 }
 
 void AMyDizzyMushroomItem::ActivateItem(AActor* Activator)
 {
-	DestroyItem();
+	Super::ActivateItem(Activator);
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf(TEXT("Strange Effects")));
 }
