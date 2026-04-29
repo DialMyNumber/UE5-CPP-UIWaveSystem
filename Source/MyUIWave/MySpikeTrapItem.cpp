@@ -2,6 +2,7 @@
 
 AMySpikeTrapItem::AMySpikeTrapItem()
 {
+	ItemType = "SpikeTrap";
 	DamageAmount = 20;
 	SpeedAmount = -10.0f;
 	DelayTime = 3.0f;
