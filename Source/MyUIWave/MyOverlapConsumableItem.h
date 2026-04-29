@@ -18,4 +18,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|OverlapConsumable")
 	float SpeedAmount;	// 아이템 획득 시 이동 속도 변화량
+
+	virtual void ActivateItem(AActor* Activator) override;
 };
