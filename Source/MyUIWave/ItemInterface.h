@@ -25,7 +25,7 @@ class UItemInterface : public UInterface
 
 
 // MyBaseItem(부모 클래스) | Actor 클래스
-// ├── CoinItem	| 오버랩
+// ├── MyCoinItem	| 오버랩
 // │   ├── SmallCoin
 // │   └── BigCoin
 // ├── TrapItem	| 오버랩
