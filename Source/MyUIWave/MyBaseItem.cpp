@@ -58,8 +58,11 @@ void AMyBaseItem::InitCollision(UShapeComponent* InCollision)
 	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	// Collision Preset의 Default를 OverlapAllDynamic(동적으로 움직이는 액터만 Overlap)
 
-	// Collision->OnComponentBeginOverlap();
-	// Collision->OnComponentEndOverlap();
+	// BeginOverlap, EndOverlap이 실행될 때 어떤 함수를 실행할지 바인딩
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AMyBaseItem::OnItemOverlap);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &AMyBaseItem::OnItemEndOverlap);
+	// 게임 실행 전 : 어떤 액터가 어떤 오브젝트에 부딛힐지 전혀 알 수 없음
+	// 런타임으로 이루어져야함 -> AddDynamic 이라는 기능을 통해 동적으로 바인딩
 
 	StaticMesh->SetupAttachment(Collision); // StaticMesh를 Collision 밑으로 재부착(Re-SetupAttachment)
 }
