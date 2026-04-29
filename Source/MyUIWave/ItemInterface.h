@@ -32,11 +32,9 @@ class UItemInterface : public UInterface
 // │   ├── Mine
 // │   └── SpikeTrap
 // └── OverlapConsumableItem (소모 / 버프 아이템) | 오버랩
-//		├── BuffItem (버프)
-//		│   ├── JumpBoostFeather
-//		│   └── Healing Pack
-//		└── DebuffItem (디버프)
-//			└── HallucinogenicMushroom (일정 시간 동안 WASD 컨트롤 반전, 색수차 포스트 프로세싱)
+//		├── SpeedBoostFeather
+//		├── HealthPack
+//		└── HallucinogenicMushroom (일정 시간 동안 WASD 컨트롤 반전, 색수차 포스트 프로세싱)
 
 class MYUIWAVE_API IItemInterface
 {
