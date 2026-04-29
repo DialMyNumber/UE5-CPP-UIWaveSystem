@@ -29,9 +29,22 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;	// GetItemType()을 통해 가져온 아이템 타입을 저장할 변수
 
-	virtual void OnItemOverlap(AActor* OverlapActor) override;
-	virtual void OnItemEndOverlap(AActor* OverlapActor) override;
+	virtual void OnItemOverlap(UPrimitiveComponent* OverlappedComp,	// Collision 컴포넌트 자기 자신 
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+		) override;
+
+	virtual void OnItemEndOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex) override;
+
 	virtual void ActivateItem(AActor* Activator) override;
+
 	virtual FName GetItemType() const override;
 
 	void InitCollision(UShapeComponent* InCollision);

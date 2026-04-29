@@ -15,11 +15,19 @@ AMyBaseItem::AMyBaseItem()
 	StaticMesh->SetupAttachment(Scene); // Collision이 나중에 붙을 거지만 일단 Scene에 붙임
 }
 
-void AMyBaseItem::OnItemOverlap(AActor* OverlapActor)
+void AMyBaseItem::OnItemOverlap(UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
 {
 }
 
-void AMyBaseItem::OnItemEndOverlap(AActor* OverlapActor)
+void AMyBaseItem::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
 {
 }
 
@@ -47,6 +55,11 @@ void AMyBaseItem::InitCollision(UShapeComponent* InCollision)
 	Collision = InCollision;
 	Collision->SetupAttachment(Scene);
 
-	// StaticMesh를 Collision 밑으로 재부착(Re-SetupAttachment)
-	StaticMesh->SetupAttachment(Collision);
+	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	// Collision Preset의 Default를 OverlapAllDynamic(동적으로 움직이는 액터만 Overlap)
+
+	// Collision->OnComponentBeginOverlap();
+	// Collision->OnComponentEndOverlap();
+
+	StaticMesh->SetupAttachment(Collision); // StaticMesh를 Collision 밑으로 재부착(Re-SetupAttachment)
 }

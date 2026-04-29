@@ -41,12 +41,23 @@ class MYUIWAVE_API IItemInterface
 	GENERATED_BODY()
 
 public:
-	virtual void OnItemOverlap(AActor* OverlapActor) = 0;
+	virtual void OnItemOverlap(
+		UPrimitiveComponent* OverlappedComp,	// Collision 컴포넌트 자기 자신 
+		AActor* OtherActor, // Character가 아닌 Actor인 이유 : AI가 조종하는 Pawn이나 Monster 등 Character 외에도 발동할 수 있도록
+							// 	ㄴ> 그때그때 Cast를 통해 캐스팅만 하면 간단하게 적용 가능
+		UPrimitiveComponent* OtherComp,	// 위 Actor의 Overlap 이벤트를 발생시킨 Component 
+										// ex) 캡슐 컴포넌트
+		int32 OtherBodyIndex,	// 물리 이벤트를 위한 변수
+		bool bFromSweep,
+		const FHitResult& SweepResult) = 0;
 	// 순수 가상 함수로 선언 : 이 인터페이스를 상속하는 자식 클래스는 반드시 오버라이딩으로 구현해야함
-	// Character가 아닌 Actor인 이유 : AI가 조종하는 Pawn이나 Monster 등 Character 외에도 발동할 수 있도록
-	// ㄴ> 그때그때 Cast를 통해 캐스팅만 하면 간단하게 적용 가능
 
-	virtual void OnItemEndOverlap(AActor* OverlapActor) = 0;
+	virtual void OnItemEndOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex) = 0;
+
 	virtual void ActivateItem(AActor* Activator) = 0;
 	virtual FName GetItemType() const = 0;
 	// Type 등을 알아낼 때는 (FString보다) FName이 속도가 빠르고 메모리도 절약 가능
