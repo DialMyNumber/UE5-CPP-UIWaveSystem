@@ -41,6 +41,7 @@ class MYUIWAVE_API IItemInterface
 	GENERATED_BODY()
 
 public:
+	UFUNCTION() // 리플렉션 시스템에 등록 -> 리플렉션 시스템에 등록을 해야 런타임에 이 함수를 찾을 수 있음
 	virtual void OnItemOverlap(
 		UPrimitiveComponent* OverlappedComp,	// Collision 컴포넌트 자기 자신 
 		AActor* OtherActor, // Character가 아닌 Actor인 이유 : AI가 조종하는 Pawn이나 Monster 등 Character 외에도 발동할 수 있도록
@@ -52,6 +53,7 @@ public:
 		const FHitResult& SweepResult) = 0;
 	// 순수 가상 함수로 선언 : 이 인터페이스를 상속하는 자식 클래스는 반드시 오버라이딩으로 구현해야함
 
+	UFUNCTION() // 리플렉션 시스템에 등록 -> 리플렉션 시스템에 등록을 해야 런타임에 이 함수를 찾을 수 있음
 	virtual void OnItemEndOverlap(
 		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
