@@ -5,6 +5,8 @@
 #include "ItemInterface.h"	// 생성한 아이템 인터페이스
 #include "MyBaseItem.generated.h"
 
+class UShapeComponent;
+
 UCLASS()
 class MYUIWAVE_API AMyBaseItem : public AActor, public IItemInterface
 {
@@ -14,14 +16,25 @@ public:
 	AMyBaseItem();
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
+	USceneComponent* Scene;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
+	UShapeComponent* Collision;	// 콜리전 담당, 모양은 아직 미지정 상태 -> 자식 클래스 생성자에서
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
+	UStaticMeshComponent* StaticMesh;
+
+	// Category = 'Item' 이런식으로 실수하지 말것
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	FName ItemType;	// GetItemType()을 통해 가져온 아이템 타입을 저장할 변수
+
 	virtual void OnItemOverlap(AActor* OverlapActor) override;
 	virtual void OnItemEndOverlap(AActor* OverlapActor) override;
 	virtual void ActivateItem(AActor* Activator) override;
 	virtual FName GetItemType() const override;
 
-	virtual void DestroyItem();
+	void InitCollision(UShapeComponent* InCollision);
 
-	// Category = 'Item' 이런식으로 실수하지 말것
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FName ItemType;	// GetItemType()을 통해 가져온 아이템 타입을 저장할 변수
+	virtual void DestroyItem();
 };

@@ -1,8 +1,18 @@
 #include "MyBaseItem.h"
+#include "Components/ShapeComponent.h"
 
 AMyBaseItem::AMyBaseItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	SetRootComponent(Scene);
+
+	// 여기서 Collision 생성하지 않음 -> 
+	// InitCollision() 함수 매개변수를 통해 다양한 모양의 Collision 을 자식 클래스 생성자에서 생성 예정
+
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh->SetupAttachment(Scene); // Collision이 나중에 붙을 거지만 일단 Scene에 붙임
 }
 
 void AMyBaseItem::OnItemOverlap(AActor* OverlapActor)
@@ -25,4 +35,18 @@ FName AMyBaseItem::GetItemType() const
 void AMyBaseItem::DestroyItem()
 {
 	Destroy();	// 아이템을 먹었으면 소멸
+}
+
+void AMyBaseItem::InitCollision(UShapeComponent* InCollision)
+{
+	if (!InCollision)	// nullptr 방지
+	{
+		return;
+	}
+
+	Collision = InCollision;
+	Collision->SetupAttachment(Scene);
+
+	// StaticMesh를 Collision 밑으로 재부착(Re-SetupAttachment)
+	StaticMesh->SetupAttachment(Collision);
 }
