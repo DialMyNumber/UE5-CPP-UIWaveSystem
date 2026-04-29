@@ -14,4 +14,6 @@ public:
 
 	virtual void ActivateItem(AActor* Activator) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|OverlapTrap")
+	float ExplosionRadius;
 };
