@@ -2,18 +2,22 @@
 
 AMyBaseItem::AMyBaseItem()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
-void AMyBaseItem::BeginPlay()
+void AMyBaseItem::OnItemOverlap(AActor* OverlapActor)
 {
-	Super::BeginPlay();
-	
 }
 
-void AMyBaseItem::Tick(float DeltaTime)
+void AMyBaseItem::OnItemEndOverlap(AActor* OverlapActor)
 {
-	Super::Tick(DeltaTime);
+}
 
+void AMyBaseItem::ActivateItem(AActor* Activator)
+{
+}
+
+FName AMyBaseItem::GetItemType() const
+{
+	return ItemType;
 }
