@@ -26,15 +26,15 @@ class UItemInterface : public UInterface
 
 // MyBaseItem(부모 클래스) | Actor 클래스
 // ├── MyCoinItem	| 오버랩
-// │   ├── SmallCoin
-// │   └── BigCoin
-// ├── TrapItem	| 오버랩
-// │   ├── Mine
+// │   ├── LargeCoin
+// │   └── SmallCoin
+// ├── OverlapTrapItem	| 오버랩
+// │   ├── ExplosiveMine
 // │   └── SpikeTrap
 // └── OverlapConsumableItem (소모 / 버프 아이템) | 오버랩
 //		├── SpeedBoostFeather
 //		├── HealthPack
-//		└── HallucinogenicMushroom (일정 시간 동안 WASD 컨트롤 반전, 색수차 포스트 프로세싱)
+//		└── DizzyMushroom (일정 시간 동안 WASD 컨트롤 반전, 색수차 포스트 프로세싱)
 
 class MYUIWAVE_API IItemInterface
 {
