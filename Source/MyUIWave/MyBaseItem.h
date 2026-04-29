@@ -19,7 +19,7 @@ protected:
 	virtual void ActivateItem(AActor* Activator) override;
 	virtual FName GetItemType() const override;
 
-	virtual void DestoryItem();
+	virtual void DestroyItem();
 
 	// Category = 'Item' 이런식으로 실수하지 말것
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
