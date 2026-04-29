@@ -1,4 +1,5 @@
 #include "MySpeedBoostFeatherItem.h"
+#include "Components/SphereComponent.h"
 
 AMySpeedBoostFeatherItem::AMySpeedBoostFeatherItem()
 {
@@ -6,6 +7,9 @@ AMySpeedBoostFeatherItem::AMySpeedBoostFeatherItem()
 	ItemType = "SpeedBoostFeather";
 	HPAmount = 0.0f;		// 아이템 획득 시 HP 변화량
 	SpeedAmount = 30.0f;	// 아이템 획득 시 이동 속도 변화량
+
+	USphereComponent* Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
+	InitCollision(Sphere);	// Box Collision 컴포넌트 생성 -> Scene 컴포넌트에 부착, StaticMesh를 Collision에 다시 부착
 }
 
 void AMySpeedBoostFeatherItem::ActivateItem(AActor* Activator)
