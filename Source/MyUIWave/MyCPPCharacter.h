@@ -31,8 +31,17 @@ protected:
 
 private:
 	float NormalSpeed;
+	float OriginSpeed;
 	float SprintSpeedMultiplier;
 	float SprintSpeed;
+
+	struct FSpeedEffect
+	{
+		float Amount;      // 속도 증가량
+		float Duration;    // 효과 지속 시간
+	};
+
+	TArray<FSpeedEffect> ActiveSpeedEffects; // 활성화된 속도 효과 리스트
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,7 +65,23 @@ public:
 		AController* EventInstigator,		// 데미지를 입히는 주체 ex) World, 상대 몬스터, 
 		AActor* DamageCauser) override;		// 데미지를 실제로 입힌 오브젝트 ex) 총알
 
+	TArray<FTimerHandle> SpeedTimerHandles;  // 각 속도 효과에 대한 타이머 핸들을 관리하는 배열
+
+	UFUNCTION(BlueprintPure, Category = "Speed")
+	float GetNormalSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Speed")
+	void AddNormalSpeed(float Amount, float duration);	// 지속시간 동안 기본 이동속도 증가
+
+	void SetNormalSpeed(float InSpeed);
+	
 	void OnDeath();
+
+	UFUNCTION()
+	void UpdateSpeed();
+
+	UFUNCTION()
+	void RemoveSpeedEffect(float Amount);
 
 	UFUNCTION()
 	void Move(const FInputActionValue& value);
