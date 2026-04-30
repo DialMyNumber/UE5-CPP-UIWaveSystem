@@ -15,9 +15,13 @@ AMyGameState::AMyGameState()
 	Score = 0;	// 스코어 초기화
 	SpawnedCoinCount = 0;	// 코인 초기화
 	CollectedCoinCount = 0;	// 코인 초기화
-	LevelDuration = 30.0f;	// 레벨 지속시간 초기화
+	LevelDuration = 10.0f;	// 레벨 지속시간 초기화
 	CurrentLevelIndex = 0;	// 현재 레벨 초기화
 	MaxLevels = 3;		// 최대 레벨 초기화
+
+	CurrentWave = 0;	// 현재 웨이브 초기화
+	MaxWave = 3;		// 최대 웨이브 초기화
+	SpawnPerWave = 40;	// 웨이브 당 스폰 횟수 초기화
 }
 
 void AMyGameState::BeginPlay()
@@ -60,7 +64,8 @@ void AMyGameState::OnCoinCollected()
 
 	if (SpawnedCoinCount > 0 && CollectedCoinCount >= SpawnedCoinCount)
 	{
-		EndLevel();
+		// EndLevel();
+		StartNextWave();
 	}
 }
 
@@ -75,6 +80,11 @@ void AMyGameState::StartLevel()
 		}
 	}
 
+	CurrentWave = 0;
+
+	StartNextWave();
+
+	/*
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
@@ -125,6 +135,71 @@ void AMyGameState::StartLevel()
 		LevelDuration,
 		false	// 반복여부
 	);
+	*/
+}
+
+void AMyGameState::StartNextWave()
+{
+	GetWorldTimerManager().ClearTimer(WaveTimerHandle); // 웨이브가 끝나면 타이머를 초기화
+
+	CurrentWave++;
+
+	if (CurrentWave > MaxWave)
+	{
+		EndLevel();
+		return;
+	}
+
+	SpawnedCoinCount = 0;
+	CollectedCoinCount = 0;
+
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	for (int32 i = 0; i < SpawnPerWave; ++i)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			int32 RandomIndex = FMath::RandRange(0, FoundVolumes.Num() - 1);
+			ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[RandomIndex]);
+
+			if (SpawnVolume)
+			{
+				AActor* SpawnedActor = SpawnVolume->SpawnRandomItem();
+
+				// AMyCoinItem 포함 그 하위 자식 클래스인지 확인
+				if (SpawnedActor && SpawnedActor->IsA(AMyCoinItem::StaticClass()))
+				{
+					++SpawnedCoinCount;
+				}
+			}
+		}
+	}
+
+	float WaveDuration = 30.0f;  // 각 웨이브의 제한시간 (초)
+	GetWorldTimerManager().SetTimer(
+		WaveTimerHandle,
+		this,
+		&AMyGameState::OnWaveTimeUp,
+		WaveDuration,
+		false // 반복하지 않음
+	);
+
+	UpdateHUD();
+}
+
+void AMyGameState::OnWaveTimeUp()
+{
+	if (SpawnedCoinCount > 0 && CollectedCoinCount >= SpawnedCoinCount)
+	{
+		// 코인을 다 먹으면 다음 웨이브 시작
+		StartNextWave();
+	}
+	else
+	{
+		// 시간 초과 시 웨이브 진행
+		StartNextWave();
+	}
 }
 
 void AMyGameState::OnLevelTimeUp()
@@ -189,9 +264,21 @@ void AMyGameState::UpdateHUD()
 			if (UUserWidget* HUDWidget = MyPlayerController->GetHUDWidget())
 			{
 				if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Time"))))
-				{															// Widget 에서 이름을 Time이라고 설정해둠
-					float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle); // 남은 시간
-					
+				{
+					// 웨이브 타이머가 활성화된 경우
+					float RemainingTime = 0.0f;
+					if (GetWorldTimerManager().IsTimerActive(WaveTimerHandle))
+					{
+						// 웨이브 타이머의 남은 시간
+						RemainingTime = GetWorldTimerManager().GetTimerRemaining(WaveTimerHandle);
+					}
+					// 레벨 타이머가 활성화된 경우
+					else if (GetWorldTimerManager().IsTimerActive(LevelTimerHandle))
+					{
+						// 레벨 타이머의 남은 시간
+						RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+					}
+
 					TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time : %.1f"), RemainingTime)));
 				}
 
@@ -204,7 +291,6 @@ void AMyGameState::UpdateHUD()
 						{
 							ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score : %d"), MyGameInstance->TotalScore)));
 						}
-
 					}
 				}
 

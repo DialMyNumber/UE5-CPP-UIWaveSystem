@@ -33,9 +33,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level")
 	float LevelDuration;	// 현재 레벨 지속시간
 
+	int32 CurrentWave;
+	int32 MaxWave;
+	int32 SpawnPerWave;
+
 	FTimerHandle LevelTimerHandle;	// 현재 레벨의 타이머
 	FTimerHandle HUDUpdateTimerHandle;		// HUD의 남은시간 갱신을 위해 매번 UpdateHUD(); 를 호출하면 비효율적
 	// UpdateHUD(); 대신 이 타이머를 사용하여 UpdateHUD(); 호출 횟수를 줄이기 위해 사용하는 타이머
+
+	FTimerHandle WaveTimerHandle; // 현재 웨이브의 타이머
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level")
 	int32 MaxLevels;	// 최고 레벨 단계
@@ -57,6 +63,9 @@ public:
 	void StartLevel();
 	void OnLevelTimeUp();
 	void EndLevel();
+
+	void StartNextWave();
+	void OnWaveTimeUp();
 
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	void OnGameOver();
