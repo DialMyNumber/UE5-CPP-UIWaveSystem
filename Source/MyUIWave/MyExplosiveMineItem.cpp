@@ -1,5 +1,6 @@
 #include "MyExplosiveMineItem.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"			// ApplyDamage에 필요
 
 AMyExplosiveMineItem::AMyExplosiveMineItem()
 {
@@ -16,10 +17,14 @@ AMyExplosiveMineItem::AMyExplosiveMineItem()
 	ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));
 	InitCollision(ExplosionCollision);
 	ExplosionCollision->InitSphereRadius(ExplosionRadius);
+
+	bIsActivated = false;
 }
 
 void AMyExplosiveMineItem::ActivateItem(AActor* Activator)
 {
+	if (bIsActivated) return;	// 이미 활성화가 되어있으면 아무것도 하지 않기
+
 	GetWorld()->GetTimerManager().SetTimer(
 		ExplosionTimerHandle,	// ExplosionTimerHandle 핸들러를
 		this,	// 이 객체에서 가져오고
@@ -27,6 +32,8 @@ void AMyExplosiveMineItem::ActivateItem(AActor* Activator)
 		DelayTime,	// DelayTime 초 뒤에
 		false	// 한 번만 실행 (<-> true : 반복)
 	);
+
+	bIsActivated = true;	// 활성화
 }
 
 void AMyExplosiveMineItem::Explode()
@@ -38,7 +45,13 @@ void AMyExplosiveMineItem::Explode()
 	{
 		if (Actor && Actor->ActorHasTag("Player"))	// Actor가 유효하고, "Player" 태그가 있으면
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf(TEXT("Get %d Damage"), DamageAmount));
+			UGameplayStatics::ApplyDamage(
+				Actor,	// 데미지를 받을 AActor
+				DamageAmount,
+				nullptr, // 데미지를 입히는 원인 주체 ( ex. 지뢰를 심은 Actor )
+				this,	// 실제로 데미지를 입히는 AActor
+				UDamageType::StaticClass()	// 데미지 타입?
+			);
 		}
 	}
 
