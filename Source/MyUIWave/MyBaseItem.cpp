@@ -25,8 +25,6 @@ void AMyBaseItem::OnItemOverlap(UPrimitiveComponent* OverlappedComp,
 	// OtherActor가 nullptr이 아니고, OtherActor가 "Player" 라는 태그인지 확인
 	if (OtherActor && OtherActor->ActorHasTag("Player")) 
 	{
-		// -1이면 ID 자동 생성, 2초동안, 초록색으로, 메세지
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf(TEXT("Overlap!")));
 		ActivateItem(OtherActor);
 	}
 }
