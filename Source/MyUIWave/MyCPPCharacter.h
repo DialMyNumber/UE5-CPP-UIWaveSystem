@@ -23,6 +23,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentHealth;
+
 private:
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
@@ -33,6 +39,24 @@ protected:
 
 public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetCurrentHealth() const;
+	// 현재 체력 Getter, BlueprintPure : Getter에 사용
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void AddCurrentHealth(float Amount);	// 현재 체력 증가
+
+	// Static 함수 : 객체 생성 없이도 바로 호출할 수 있는 함수
+	// 어떤 Actor에 데미지를 입혔는지 알 수 있음 -> 해당 Actor에 AActor::TakeDamage() 호출
+	// AActor::TakeDamage() 는 오버라이딩이 가능하기 때문에 방어력, 데미지 감소 등의 요소를 커스텀이 가능함
+	virtual float TakeDamage(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,		// 데미지 유형 ex) World, 불, 물, ...
+		AController* EventInstigator,		// 데미지를 입히는 주체 ex) World, 상대 몬스터, 
+		AActor* DamageCauser) override;		// 데미지를 실제로 입힌 오브젝트 ex) 총알
+
+	void OnDeath();
 
 	UFUNCTION()
 	void Move(const FInputActionValue& value);

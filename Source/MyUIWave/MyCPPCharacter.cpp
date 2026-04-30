@@ -33,6 +33,10 @@ AMyCPPCharacter::AMyCPPCharacter()
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	// 현재 Character의 MaxWalkSpeed 를 NormalSpeed로 설정
+
+	// 체력 초기화
+	MaxHealth = 100.0f;
+	CurrentHealth = MaxHealth;
 }
 
 void AMyCPPCharacter::BeginPlay()
@@ -103,6 +107,43 @@ void AMyCPPCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 			}
 		}
 	}
+}
+
+float AMyCPPCharacter::GetCurrentHealth() const
+{
+	return CurrentHealth;
+}
+
+void AMyCPPCharacter::AddCurrentHealth(float Amount)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth + Amount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health increased to : %f"), CurrentHealth);
+}
+
+float AMyCPPCharacter::TakeDamage(
+	float DamageAmount, 
+	FDamageEvent const& DamageEvent, 
+	AController* EventInstigator, 
+	AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	// ActualDamage = 방어력, 감소, 증폭 등 모든 요소를 고려하여 실제로 입을 데미지
+
+						// CurrentHealth - DamageAmount의 결과가 최소 0.0, 최대 MaxHealth가 되도록 보정
+	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Take Damage, Health decreased to : %f"), CurrentHealth);
+	
+	if (CurrentHealth <= 0.0f)
+	{
+		OnDeath();
+	}
+
+	return ActualDamage;
+}
+
+void AMyCPPCharacter::OnDeath()
+{
+	// 사망 처리 ex) 게임 종료
 }
 
 void AMyCPPCharacter::Move(const FInputActionValue& value)	// Axis2D = 2D Vector
