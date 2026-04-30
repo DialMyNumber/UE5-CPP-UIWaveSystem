@@ -71,7 +71,7 @@ FMyItemSpawnRow* ASpawnVolume::GetRandomItem() const
 	const float RandValue = FMath::FRandRange(0.0f, TotalChance);
 	float AccumulateChance = 0.0f;
 
-	for (FMyItemSpawnRow* Row : AllRows) 
+	for (FMyItemSpawnRow* Row : AllRows)
 	{
 		AccumulateChance += Row->SpawnChance;	// 해당 열의 스폰 확률
 		if (RandValue <= AccumulateChance)
