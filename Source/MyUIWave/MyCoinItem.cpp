@@ -1,4 +1,6 @@
 #include "MyCoinItem.h"
+#include "Engine/World.h" // 게임 World를 가져오기
+#include "MyGameStateBase.h"
 
 AMyCoinItem::AMyCoinItem()
 {
@@ -11,7 +13,14 @@ void AMyCoinItem::ActivateItem(AActor* Activator)
 {
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf(TEXT("Get %d Points!"), PointValue));
-		Destroy();
+		if (UWorld* World = GetWorld())
+		{
+			if (AMyGameStateBase* GameState = World->GetGameState<AMyGameStateBase>())
+			{
+				GameState->AddScore(PointValue);
+			}
+		}
+
+		DestroyItem();
 	}
 }
