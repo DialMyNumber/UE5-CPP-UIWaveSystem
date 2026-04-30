@@ -1,7 +1,11 @@
 #include "MyGameState.h"
+#include "MyGameInstance.h"		// Game Instance
 #include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
 #include "MyCoinItem.h"			// 코인 아이템을 다 먹었는지 체크할 때 필요
+
+// 매 레벨당 초기화가 됨
+// 그래서 Game Instance 라는 싱글톤 객체를 이용해서 게임 전체에서 공유
 
 AMyGameState::AMyGameState()
 {
@@ -27,7 +31,15 @@ int32 AMyGameState::GetScore() const
 
 void AMyGameState::AddScore(int32 Amount)
 {
-	Score += Amount;
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			MyGameInstance->AddToScore(Amount);
+			// 게임 인스턴스 싱글톤에 Score 추가
+		}
+	}
 }
 
 void AMyGameState::OnCoinCollected()
@@ -43,6 +55,16 @@ void AMyGameState::OnCoinCollected()
 
 void AMyGameState::StartLevel()
 {
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			CurrentLevelIndex = MyGameInstance->CurrentLevelIndex;
+			// 게임 인스턴스 싱글톤에 있는 CurrentLevelIndex를 가져옴
+		}
+	}
+
 	SpawnedCoinCount = 0;		// 현재 레벨별로 다시 초기화
 	CollectedCoinCount = 0;		// 현재 레벨별로 다시 초기화
 
@@ -95,21 +117,35 @@ void AMyGameState::OnLevelTimeUp()
 // 시간 제한이 다 되었거나, 코인을 다 먹었거나 등
 void AMyGameState::EndLevel()
 {
-	GetWorldTimerManager().ClearTimer(LevelTimerHandle);	// 타이머 초기화
+	GetWorldTimerManager().ClearTimer(LevelTimerHandle);  // 타이머 초기화
 	++CurrentLevelIndex;
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			AddScore(Score);  // 스코어 추가
+			MyGameInstance->CurrentLevelIndex = CurrentLevelIndex;
+			// 게임 인스턴스 싱글톤에 있는 CurrentLevelIndex를 갱신
+		}
+	}
 
 	if (CurrentLevelIndex >= MaxLevels)
 	{
+		// 마지막 레벨에 도달하면 게임 오버
 		OnGameOver();
 		return;
 	}
 
+	// 아직 마지막 레벨에 도달하지 않았으면 다음 레벨을 열기
 	if (LevelMapsNames.IsValidIndex(CurrentLevelIndex))
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), LevelMapsNames[CurrentLevelIndex]);
 	}
-	else // 예외처리
+	else
 	{
+		// 예외 처리: 레벨 맵이 존재하지 않으면 게임 오버
 		OnGameOver();
 	}
 }
