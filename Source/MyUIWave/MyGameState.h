@@ -1,18 +1,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
-#include "MyGameStateBase.generated.h"
+#include "GameFramework/GameState.h"
+#include "MyGameState.generated.h"
 
-// Player Score 등 게임 전체에서 사용
 UCLASS()
-class MYUIWAVE_API AMyGameStateBase : public AGameStateBase
+class MYUIWAVE_API AMyGameState : public AGameState
 {
 	GENERATED_BODY()
 
 public:
-	AMyGameStateBase();
-	
+	AMyGameState();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Score")
 	int32 Score;
 
