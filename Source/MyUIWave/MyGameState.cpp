@@ -186,6 +186,8 @@ void AMyGameState::StartNextWave()
 	);
 
 	UpdateHUD();
+
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString::Printf(TEXT("Wave %d Start!"), CurrentWave));
 }
 
 void AMyGameState::OnWaveTimeUp()

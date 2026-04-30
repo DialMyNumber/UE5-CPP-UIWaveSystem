@@ -33,8 +33,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level")
 	float LevelDuration;	// 현재 레벨 지속시간
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 CurrentWave;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 MaxWave;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 SpawnPerWave;
 
 	FTimerHandle LevelTimerHandle;	// 현재 레벨의 타이머
