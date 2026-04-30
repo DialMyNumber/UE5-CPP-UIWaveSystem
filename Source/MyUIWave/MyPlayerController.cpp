@@ -99,8 +99,14 @@ void AMyPlayerController::ShowMainMenu(bool bIsRestart)
 		if (UTextBlock* ButtonText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("StartButtonText"))))
 		{
 			if (bIsRestart)
-			{
+			{	// 게임 오버시에 Game Over! 텍스트와 Total Score 텍스트 출력
 				ButtonText->SetText(FText::FromString(TEXT("Restart")));
+				UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
+				// 블루프린트에서 작업한 PlayGameOverAnim 애니메이션 함수 가져오기
+				if (PlayAnimFunc)
+				{
+					MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr); //매개변수가 없을땐 nullptr
+				}
 			}
 			else
 			{
@@ -127,7 +133,7 @@ void AMyPlayerController::ShowGameHUD()
 
 	if (HUDWidgetClass)	// 메인 메뉴 클래스가 있으면
 	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, MainMenuWidgetClass);	// 메인 메뉴 인스턴스 생성
+		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);	// 게임 메뉴 인스턴스 생성
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();	// 뷰포트에 HUDWidgetInstance 띄우기 = 인게임 내
