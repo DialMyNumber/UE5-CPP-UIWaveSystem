@@ -37,10 +37,9 @@ private:
 
 	struct FSpeedEffect
 	{
-		float Amount;      // 속도 증가량
-		float Duration;    // 효과 지속 시간
+		float Amount;
+		float Duration;
 	};
-
 	TArray<FSpeedEffect> ActiveSpeedEffects; // 활성화된 속도 효과 리스트
 
 protected:
@@ -80,7 +79,6 @@ public:
 	UFUNCTION()
 	void UpdateSpeed();
 
-	UFUNCTION()
 	void RemoveSpeedEffect(float Amount);
 
 	UFUNCTION()

@@ -158,29 +158,26 @@ void AMyCPPCharacter::AddNormalSpeed(float Amount, float Duration)
 	// 총 속도를 계산해서 적용
 	UpdateSpeed();
 
-	// 해당 효과의 타이머를 등록하여 지속시간 동안 유지
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindLambda([this, Amount]()
-		{
-			// 타이머가 끝날 때, 해당 속도 효과 제거
-			RemoveSpeedEffect(Amount);
-			UpdateSpeed();  // 속도를 다시 업데이트
+	FTimerHandle NewTimerHandle;
 
-			// 활성화된 효과가 더 이상 없으면, NormalSpeed를 OriginSpeed로 복원
+	GetWorld()->GetTimerManager().SetTimer(
+		NewTimerHandle,
+		[this, Amount]()
+		{
+			if (!IsValid(this)) return;
+			if (!GetCharacterMovement()) return;
+
+			RemoveSpeedEffect(Amount);
+			UpdateSpeed();
+
 			if (ActiveSpeedEffects.Num() == 0)
 			{
-				SetNormalSpeed(OriginSpeed);  // 최종 속도를 원래 값으로 복원
-				GetCharacterMovement()->MaxWalkSpeed = OriginSpeed;  // MaxWalkSpeed도 복원
+				SetNormalSpeed(OriginSpeed);
+				GetCharacterMovement()->MaxWalkSpeed = OriginSpeed;
 			}
-		});
-
-	// Timer 등록 - 각 타이머 핸들을 `SpeedTimerHandles` 배열에 저장
-	FTimerHandle NewTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(
-		NewTimerHandle,           // 새로 생성된 타이머 핸들
-		TimerDelegate,            // 실행할 함수 (람다 함수)
-		Duration,                 // 타이머 지속 시간
-		false                     // 한 번만 실행
+		},
+		Duration,
+		false
 	);
 
 	// 타이머 핸들을 배열에 추가
@@ -210,7 +207,7 @@ void AMyCPPCharacter::RemoveSpeedEffect(float Amount)
 	// 효과 리스트에서 해당 Amount를 가진 효과를 제거
 	for (int32 i = 0; i < ActiveSpeedEffects.Num(); ++i)
 	{
-		if (ActiveSpeedEffects[i].Amount == Amount)
+		if (FMath::IsNearlyEqual(ActiveSpeedEffects[i].Amount, Amount))
 		{
 			ActiveSpeedEffects.RemoveAt(i);
 			break;  // 첫 번째로 일치하는 효과만 제거
