@@ -27,16 +27,18 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 	);	// 박스 크기 내부의 임의 좌표
 }
 
-void ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
+AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 {
-	if (!ItemClass) return;	// 방어 코드
+	if (!ItemClass) return nullptr;	// 방어 코드
 
-	// 마찬가지로 AActor 포함 그 하위 자식 클래스까지 적용 가능
-	GetWorld()->SpawnActor<AActor>(
+							// AActor 포함 그 하위 자식 클래스까지 적용 가능
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(
 		ItemClass,
 		GetRandomPointInVolume(),	// 위치
 		FRotator::ZeroRotator	// 회전할지 여부
 	);
+
+	return SpawnedActor;
 }
 
 FMyItemSpawnRow* ASpawnVolume::GetRandomItem() const
@@ -84,7 +86,7 @@ FMyItemSpawnRow* ASpawnVolume::GetRandomItem() const
 }
 
 
-void ASpawnVolume::SpawnRandomItem()
+AActor* ASpawnVolume::SpawnRandomItem()
 {
 	// 임의의 Row(행)을 가져옴
 	if (FMyItemSpawnRow* SelectedRow = GetRandomItem())
@@ -92,7 +94,9 @@ void ASpawnVolume::SpawnRandomItem()
 		// SelectedRow 의 ItemClass열을 Get() 하는데 TSoftClassPtr 타입으로 가져오기 때문에 UClass* 로 받아야함
 		if (UClass* ActualClass = SelectedRow->ItemClass.Get())
 		{
-			SpawnItem(ActualClass);	// 직접 구현했던 SpawnItem 함수로 스폰
+			return SpawnItem(ActualClass);	// 직접 구현했던 SpawnItem 함수로 스폰
 		}
 	}
+
+	return nullptr;			// 스폰에 실패하면 nullptr
 }
