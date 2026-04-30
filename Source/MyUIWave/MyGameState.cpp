@@ -1,8 +1,11 @@
 #include "MyGameState.h"
 #include "MyGameInstance.h"		// Game Instance
+#include "MyPlayerController.h"		// HUD에 필요
 #include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
 #include "MyCoinItem.h"			// 코인 아이템을 다 먹었는지 체크할 때 필요
+#include "Components/TextBlock.h"	// HUD에 필요
+#include "Blueprint/UserWidget.h"	// HUD에 필요
 
 // 매 레벨당 초기화가 됨
 // 그래서 Game Instance 라는 싱글톤 객체를 이용해서 게임 전체에서 공유
@@ -22,6 +25,14 @@ void AMyGameState::BeginPlay()
 	Super::BeginPlay();
 
 	StartLevel();
+
+	GetWorldTimerManager().SetTimer(
+		HUDUpdateTimerHandle,
+		this,	// 이 객체에서
+		&AMyGameState::UpdateHUD,
+		0.1f,
+		true	// 반복 여부
+	);
 }
 
 int32 AMyGameState::GetScore() const
@@ -95,6 +106,8 @@ void AMyGameState::StartLevel()
 		}
 	}
 
+	UpdateHUD();
+
 	// 현재 레벨 제한시간 작동
 	GetWorldTimerManager().SetTimer(
 		LevelTimerHandle,
@@ -152,5 +165,44 @@ void AMyGameState::EndLevel()
 
 void AMyGameState::OnGameOver()
 {
+	UpdateHUD();
 	UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+}
+
+// HUD를 갱신하는 함수, C++ 함수로 구현하면 필요한 경우에만 함수를 호출해서 업데이트 하면 되기 때문에 성능 개선
+void AMyGameState::UpdateHUD()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerController))
+		{
+			if (UUserWidget* HUDWidget = MyPlayerController->GetHUDWidget())
+			{
+				if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Time"))))
+				{															// Widget 에서 이름을 Time이라고 설정해둠
+					float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle); // 남은 시간
+					
+					TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time : %.1f"), RemainingTime)));
+				}
+
+				if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Score"))))
+				{															// Widget 에서 이름을 Score라고 설정해둠
+					if (UGameInstance* GameInstance = GetGameInstance())	// 총 점수 합
+					{
+						UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+						if (MyGameInstance)
+						{
+							ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score : %d"), MyGameInstance->TotalScore)));
+						}
+
+					}
+				}
+
+				if (UTextBlock* LevelIndexText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Level"))))
+				{														// Widget 에서 이름을 Level이라고 설정해둠
+					LevelIndexText->SetText(FText::FromString(FString::Printf(TEXT("Level : %d"), CurrentLevelIndex + 1)));
+				}
+			}
+		}
+	}
 }
