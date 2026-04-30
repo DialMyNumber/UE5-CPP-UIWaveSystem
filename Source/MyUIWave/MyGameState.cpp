@@ -66,6 +66,15 @@ void AMyGameState::OnCoinCollected()
 
 void AMyGameState::StartLevel()
 {
+	// 레벨을 띄우면 게임 HUD로 전환
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerController))
+		{
+			MyPlayerController->ShowGameHUD();
+		}
+	}
+
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
@@ -116,10 +125,6 @@ void AMyGameState::StartLevel()
 		LevelDuration,
 		false	// 반복여부
 	);
-
-	UE_LOG(LogTemp, Warning, TEXT("Level %d Start!, Spawned %d coin:"),
-		CurrentLevelIndex + 1,
-		SpawnedCoinCount);
 }
 
 void AMyGameState::OnLevelTimeUp()
@@ -165,8 +170,13 @@ void AMyGameState::EndLevel()
 
 void AMyGameState::OnGameOver()
 {
-	UpdateHUD();
-	UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerController))
+		{
+			MyPlayerController->ShowMainMenu(true);	// true를 넣어서 Restart로 보이게
+		}
+	}
 }
 
 // HUD를 갱신하는 함수, C++ 함수로 구현하면 필요한 경우에만 함수를 호출해서 업데이트 하면 되기 때문에 성능 개선
