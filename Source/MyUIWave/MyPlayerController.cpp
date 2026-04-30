@@ -39,6 +39,7 @@ void AMyPlayerController::BeginPlay()
 		}
 	}
 
+/* 레벨을 갱신할 때마다 PlayerController가 새로 만들어짐 = 
 	// Build.cs 에 추가가 필요함
 	if (HUDWidgetClass) // 갱신은 Game State에서
 	{
@@ -55,6 +56,12 @@ void AMyPlayerController::BeginPlay()
 	if (MyGameState)
 	{
 		MyGameState->UpdateHUD();
+	}
+*/
+	FString CurrnetMapName = GetWorld()->GetMapName();
+	if (CurrnetMapName.Contains("MenuLevel"))	// 현재 레벨이 메뉴 레벨이면
+	{
+		ShowMainMenu(false);
 	}
 }
 
